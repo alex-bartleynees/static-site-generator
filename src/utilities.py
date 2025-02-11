@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from textnode import TextNode, TextType
+from src.textnode import TextNode, TextType
 import re
 
 

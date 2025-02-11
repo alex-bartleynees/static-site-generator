@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode
+from src.htmlnode import HTMLNode
 
 class TestHtmlNode(unittest.TestCase):
     def test_create_node_with_none(self):
