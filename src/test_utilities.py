@@ -1,5 +1,5 @@
 import unittest
-from utilities import extract_markdown_images, extract_markdown_links, split_nodes_delimiter, split_nodes_images, split_nodes_links
+from utilities import extract_markdown_images, extract_markdown_links, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
 from textnode import TextNode, TextType
 
 class TestSplitNodeDelimiter(unittest.TestCase):
@@ -92,3 +92,9 @@ class TestSplitNodesLinks(unittest.TestCase):
         self.assertEqual(new_nodes[1].url, "https://www.boot.dev")
         self.assertEqual(new_nodes[2].text, " and ")
         self.assertEqual(new_nodes[3].text, "to youtube")
+
+class TextToTextNodes(unittest.TestCase):
+    def test_should_transform_text_to_text_nodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = text_to_text_nodes(text)
+        self.assertEqual(len(nodes), 10)
