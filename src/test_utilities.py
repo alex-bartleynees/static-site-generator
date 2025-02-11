@@ -1,5 +1,5 @@
 import unittest
-from utilities import extract_markdown_images, extract_markdown_links, split_nodes_delimiter
+from utilities import extract_markdown_images, extract_markdown_links, split_nodes_delimiter, split_nodes_images, split_nodes_links
 from textnode import TextNode, TextType
 
 class TestSplitNodeDelimiter(unittest.TestCase):
@@ -43,3 +43,52 @@ class TestExtractMarkdownLinks(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], ("to boot dev", "https://www.boot.dev"))
         self.assertEqual(result[1], ("to youtube", "https://www.youtube.com/@bootdotdev"))
+
+class TestSplitNodesImages(unittest.TestCase):
+    def test_should_split_nodes_by_images(self):
+        old_node = TextNode(
+                "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
+                TextType.NORMAL_TEXT,
+        )
+        new_nodes = split_nodes_images([old_node])
+        self.assertEqual(len(new_nodes), 4)
+        self.assertEqual(new_nodes[0].text, "This is text with a ")
+        self.assertEqual(new_nodes[1].text, "rick roll")
+        self.assertEqual(new_nodes[1].url, "https://i.imgur.com/aKaOqIh.gif")
+        self.assertEqual(new_nodes[2].text, " and ")
+        self.assertEqual(new_nodes[3].text, "obi wan")
+
+    def test_should_return_nodes_when_no_images(self):
+        old_node = TextNode(
+                "This is text with no images",
+                TextType.NORMAL_TEXT,
+        )
+        new_nodes = split_nodes_images([old_node])
+        self.assertEqual(len(new_nodes), 1)
+        self.assertEqual(new_nodes[0].text, "This is text with no images")
+
+    def test_should_handle_text_after_last_image(self):
+        old_node = TextNode(
+                "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and text after image",
+                TextType.NORMAL_TEXT,
+        )
+        new_nodes = split_nodes_images([old_node])
+        self.assertEqual(len(new_nodes), 3)
+        self.assertEqual(new_nodes[0].text, "This is text with a ")
+        self.assertEqual(new_nodes[1].text, "rick roll")
+        self.assertEqual(new_nodes[2].text, " and text after image")
+
+
+class TestSplitNodesLinks(unittest.TestCase):
+    def test_should_split_nodes_by_links(self):
+        old_node = TextNode(
+                "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+                TextType.NORMAL_TEXT,
+        )
+        new_nodes = split_nodes_links([old_node])
+        self.assertEqual(len(new_nodes), 4)
+        self.assertEqual(new_nodes[0].text, "This is text with a link ")
+        self.assertEqual(new_nodes[1].text, "to boot dev")
+        self.assertEqual(new_nodes[1].url, "https://www.boot.dev")
+        self.assertEqual(new_nodes[2].text, " and ")
+        self.assertEqual(new_nodes[3].text, "to youtube")
