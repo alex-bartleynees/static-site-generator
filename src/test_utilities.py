@@ -1,5 +1,5 @@
 import unittest
-from split_nodes_delimiter import split_nodes_delimiter
+from utilities import extract_markdown_images, extract_markdown_links, split_nodes_delimiter
 from textnode import TextNode, TextType
 
 class TestSplitNodeDelimiter(unittest.TestCase):
@@ -27,4 +27,19 @@ class TestSplitNodeDelimiter(unittest.TestCase):
         self.assertEqual(len(new_nodes), 3)
         self.assertEqual(new_nodes[1].text_type, TextType.BOLD)
 
+   
+class TestExtractMarkdownImages(unittest.TestCase):
+    def test_should_return_tuple(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        result = extract_markdown_images(text)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ("rick roll", "https://i.imgur.com/aKaOqIh.gif"))
+        self.assertEqual(result[1], ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg"))
 
+class TestExtractMarkdownLinks(unittest.TestCase):
+    def test_should_return_tuple(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        result = extract_markdown_links(text)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ("to boot dev", "https://www.boot.dev"))
+        self.assertEqual(result[1], ("to youtube", "https://www.youtube.com/@bootdotdev"))
