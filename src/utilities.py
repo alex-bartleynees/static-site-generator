@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from src.blocktype import BlockType
 from src.textnode import TextNode
 from src.texttype import TextType
 import re
@@ -105,6 +106,26 @@ def markdown_to_blocks(text: str) -> List[str]:
     blocks = [block.strip() for block in blocks if block]
 
     return blocks
+ 
+def block_to_block_type(block: str) -> BlockType:
+    if re.match(r'^#{1,6}\s', block):
+        return BlockType.HEADING
+    if re.match(r'^```(?!`).*```(?!`)$', block):
+        return BlockType.CODE
+    if re.match(r'^>(?!>)\s', block):
+        return BlockType.QUOTE
+    if re.match(r'\s*[*-]\s.*(?:\n\s*[*-]\s.*)*', block):
+        return BlockType.UNORDERED_LIST
+    if re.match(r'^(\s*)(\d+\.\s+)(.*)', block) and validate_ordered_list(block):
+        return BlockType.ORDERED_LIST
+    return BlockType.PARAGRAPH
 
-def block_to_block_type(block: str):
-    return ""
+def validate_ordered_list(text: str) -> bool:
+    lines = text.strip().split('\n')
+    expected_number = 1
+    for line in lines:
+        number = int(line.strip().split('.')[0])
+        if number != expected_number:
+            return False
+        expected_number += 1
+    return True

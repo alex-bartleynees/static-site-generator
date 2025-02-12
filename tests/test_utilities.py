@@ -1,5 +1,6 @@
 import unittest
-from src.utilities import extract_markdown_images, extract_markdown_links, markdown_to_blocks, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
+from src.blocktype import BlockType
+from src.utilities import block_to_block_type, extract_markdown_images, extract_markdown_links, markdown_to_blocks, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
 from src.textnode import TextNode 
 from src.texttype import TextType
 
@@ -115,3 +116,38 @@ class MarkdownToBlocks(unittest.TestCase):
         self.assertEqual(len(result), 3)
         self.assertEqual(result[0], "# This is a heading")
         self.assertEqual(result[1], "This is a paragraph of text. It has some **bold** and *italic* words inside of it.")
+
+class BlockToBlockType(unittest.TestCase):
+    def test_should_return_block_type_paragraph(self):
+        block = "# Heading"
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.HEADING)
+
+    def test_should_return_block_type_code(self):
+        block = "```code () => {}```"
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.CODE)
+
+    def test_should_return_block_type_quote(self):
+        block = "> This is the greatest quote"
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.QUOTE)
+
+    def test_should_return_block_type_unordered_list(self):
+        block = """- List item 1
+                   - List item 2
+        """
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.UNORDERED_LIST)
+
+    def test_should_return_block_type_ordered_list(self):
+        block = """1. List item 1
+                   2. List item 2
+        """
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.ORDERED_LIST)
+
+    def test_should_return_block_type_ordered_paragraph(self):
+        block = "This is a paragraph" 
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.PARAGRAPH)
