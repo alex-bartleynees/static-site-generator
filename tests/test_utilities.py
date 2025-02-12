@@ -1,28 +1,29 @@
 import unittest
 from src.utilities import extract_markdown_images, extract_markdown_links, markdown_to_blocks, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
-from src.textnode import TextNode, TextType
+from src.textnode import TextNode 
+from src.texttype import TextType
 
 class TestSplitNodeDelimiter(unittest.TestCase):
     def test_should_return_new_nodes(self):
-        node = TextNode("This is text with a `code block` word", TextType.NORMAL_TEXT)
-        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE_TEXT) 
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE) 
         self.assertEqual(new_nodes[0].text, "This is text with a ")
-        self.assertEqual(new_nodes[1].text_type, TextType.CODE_TEXT)
+        self.assertEqual(new_nodes[1].text_type, TextType.CODE)
         self.assertEqual(len(new_nodes), 3)
 
     def test_should_raise_error_when_no_matching_delimiter(self):
-        node = TextNode("This is text with a `code block word", TextType.NORMAL_TEXT)
+        node = TextNode("This is text with a `code block word", TextType.TEXT)
         with self.assertRaisesRegex(ValueError, "Unmatched delimiter '`' in text: This is text with a `code block word"):
-            split_nodes_delimiter([node], "`", TextType.CODE_TEXT)
+            split_nodes_delimiter([node], "`", TextType.CODE)
 
     def test_should_return_new_nodes_with_italic_demlimiter(self):
-        node = TextNode("This is *italic* text", TextType.NORMAL_TEXT)
-        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC_TEXT)
+        node = TextNode("This is *italic* text", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
         self.assertEqual(len(new_nodes), 3)
-        self.assertEqual(new_nodes[1].text_type, TextType.ITALIC_TEXT)
+        self.assertEqual(new_nodes[1].text_type, TextType.ITALIC)
 
     def test_should_return_new_nodes_with_bold_demlimiter(self):
-        node = TextNode("This is **bold** text", TextType.NORMAL_TEXT)
+        node = TextNode("This is **bold** text", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertEqual(len(new_nodes), 3)
         self.assertEqual(new_nodes[1].text_type, TextType.BOLD)
@@ -48,7 +49,7 @@ class TestSplitNodesImages(unittest.TestCase):
     def test_should_split_nodes_by_images(self):
         old_node = TextNode(
                 "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
-                TextType.NORMAL_TEXT,
+                TextType.TEXT,
         )
         new_nodes = split_nodes_images([old_node])
         self.assertEqual(len(new_nodes), 4)
@@ -61,7 +62,7 @@ class TestSplitNodesImages(unittest.TestCase):
     def test_should_return_nodes_when_no_images(self):
         old_node = TextNode(
                 "This is text with no images",
-                TextType.NORMAL_TEXT,
+                TextType.TEXT,
         )
         new_nodes = split_nodes_images([old_node])
         self.assertEqual(len(new_nodes), 1)
@@ -70,7 +71,7 @@ class TestSplitNodesImages(unittest.TestCase):
     def test_should_handle_text_after_last_image(self):
         old_node = TextNode(
                 "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and text after image",
-                TextType.NORMAL_TEXT,
+                TextType.TEXT,
         )
         new_nodes = split_nodes_images([old_node])
         self.assertEqual(len(new_nodes), 3)
@@ -83,7 +84,7 @@ class TestSplitNodesLinks(unittest.TestCase):
     def test_should_split_nodes_by_links(self):
         old_node = TextNode(
                 "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-                TextType.NORMAL_TEXT,
+                TextType.TEXT,
         )
         new_nodes = split_nodes_links([old_node])
         self.assertEqual(len(new_nodes), 4)

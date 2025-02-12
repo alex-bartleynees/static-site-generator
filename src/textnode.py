@@ -1,15 +1,7 @@
-from enum import Enum
 
 from src.leafnode import LeafNode
+from src.texttype import TextType
 
-
-class TextType(Enum):
-    NORMAL_TEXT = "normal_text"
-    BOLD = "bold_text"
-    ITALIC_TEXT = "italic_text"
-    CODE_TEXT = "code_text"
-    LINKS = "links"
-    IMAGES = "images"
 
 
 class TextNode:
@@ -30,17 +22,17 @@ class TextNode:
 
     def text_node_to_html_node(self):
         match self.text_type:
-            case TextType.NORMAL_TEXT:
+            case TextType.TEXT:
                 return LeafNode(None, self.text)
             case TextType.BOLD:
                 return LeafNode("b", self.text)
-            case TextType.ITALIC_TEXT:
+            case TextType.ITALIC:
                 return LeafNode("i", self.text)
-            case TextType.CODE_TEXT:
+            case TextType.CODE:
                 return LeafNode("code", self.text)
-            case TextType.LINKS:
+            case TextType.LINK:
                 return LeafNode("a", self.text, {"href": self.url})
-            case TextType.IMAGES:
+            case TextType.IMAGE:
                 return LeafNode("img", "", {"src": self.url, "alt": self.text})
             case _:
                 raise ValueError(f"Invalid text type {self.text_type}")

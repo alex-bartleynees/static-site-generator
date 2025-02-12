@@ -1,5 +1,4 @@
 setup.py
-src/__init__.py
 src/htmlnode.py
 src/leafnode.py
 src/main.py
@@ -10,7 +9,6 @@ static_site_generator.egg-info/PKG-INFO
 static_site_generator.egg-info/SOURCES.txt
 static_site_generator.egg-info/dependency_links.txt
 static_site_generator.egg-info/top_level.txt
-tests/__init__.py
 tests/test_htmlnode.py
 tests/test_leafnode.py
 tests/test_parentnode.py
