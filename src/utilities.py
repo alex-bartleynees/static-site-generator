@@ -90,7 +90,7 @@ def split_nodes_links(old_nodes: List[TextNode]) -> List[TextNode]:
    
     return new_nodes
 
-def text_to_text_nodes(text: str):
+def text_to_text_nodes(text: str) -> List[TextNode]:
     base_node = TextNode(text=text, text_type=TextType.NORMAL_TEXT)
     new_nodes = split_nodes_links(split_nodes_images(split_nodes_delimiter(split_nodes_delimiter(
         split_nodes_delimiter([base_node], "**", TextType.BOLD), 
@@ -99,4 +99,8 @@ def text_to_text_nodes(text: str):
     return new_nodes
 
 
-    
+def markdown_to_blocks(text: str) -> List[str]:
+    blocks = text.split("\n\n")
+    blocks = [block.strip() for block in blocks if block]
+
+    return blocks

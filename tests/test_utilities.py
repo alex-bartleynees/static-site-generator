@@ -1,5 +1,5 @@
 import unittest
-from src.utilities import extract_markdown_images, extract_markdown_links, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
+from src.utilities import extract_markdown_images, extract_markdown_links, markdown_to_blocks, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
 from src.textnode import TextNode, TextType
 
 class TestSplitNodeDelimiter(unittest.TestCase):
@@ -98,3 +98,19 @@ class TextToTextNodes(unittest.TestCase):
         text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
         nodes = text_to_text_nodes(text)
         self.assertEqual(len(nodes), 10)
+
+class MarkdownToBlocks(unittest.TestCase):
+    def test_should_return_list_of_string(self):
+        block = """# This is a heading
+
+                This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+                * This is the first list item in a list block
+                * This is a list item
+                * This is another list item"""
+
+        result = markdown_to_blocks(block)
+
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[0], "# This is a heading")
+        self.assertEqual(result[1], "This is a paragraph of text. It has some **bold** and *italic* words inside of it.")
