@@ -1,8 +1,5 @@
-
 from src.leafnode import LeafNode
 from src.texttype import TextType
-
-
 
 class TextNode:
     def __init__(self, text, text_type, url = None):

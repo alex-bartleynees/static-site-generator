@@ -1,4 +1,6 @@
 from typing import List, Tuple
+from src.parentnode import ParentNode
+from src.htmlnode import HTMLNode
 from src.blocktype import BlockType
 from src.textnode import TextNode
 from src.texttype import TextType
@@ -129,3 +131,32 @@ def validate_ordered_list(text: str) -> bool:
             return False
         expected_number += 1
     return True
+
+def markdown_to_html(markdown: str) -> HTMLNode:
+    blocks = markdown_to_blocks(markdown)
+    parent_nodes = []
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        match block_type:
+            case BlockType.HEADING:
+                parent_nodes = [*parent_nodes, *heading_block_to_html_nodes(block)] 
+            case BlockType.PARAGRAPH:
+                split_blocks = block.split("\n")
+                for text in split_blocks:
+                    text_nodes = text_to_text_nodes(text)
+                    html_nodes = [node.text_node_to_html_node() for node in text_nodes]
+                    parent_nodes.append(ParentNode("div", html_nodes))
+                
+
+    body_node = HTMLNode(tag="body", children=parent_nodes)
+    return body_node
+
+def heading_block_to_html_nodes(block: str) -> List[HTMLNode]:
+    split_headings = block.split("\n")
+    nodes = []
+    for heading in split_headings:
+        heading_number = heading.count("#")
+        text_nodes = text_to_text_nodes(heading.strip(" # "))
+        html_nodes = [node.text_node_to_html_node() for node in text_nodes]
+        nodes.append(ParentNode(f"h{heading_number}", html_nodes))
+    return nodes

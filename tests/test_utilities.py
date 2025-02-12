@@ -1,6 +1,6 @@
 import unittest
 from src.blocktype import BlockType
-from src.utilities import block_to_block_type, extract_markdown_images, extract_markdown_links, markdown_to_blocks, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
+from src.utilities import block_to_block_type, extract_markdown_images, extract_markdown_links, markdown_to_blocks, markdown_to_html, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
 from src.textnode import TextNode 
 from src.texttype import TextType
 
@@ -151,3 +151,29 @@ class BlockToBlockType(unittest.TestCase):
         block = "This is a paragraph" 
         result = block_to_block_type(block)
         self.assertEqual(result, BlockType.PARAGRAPH)
+
+class MarkdownToHTML(unittest.TestCase):
+    def test_convert_markdown_to_html(self):
+        markdown = """
+        # *Heading* 1
+        ## **Heading** 2
+        ### Heading 3
+        #### Heading 4
+        ##### Heading 5
+        ###### Heading 6
+
+        Test paragraph
+        Test paragraph 2
+
+        1. List item 1
+        2. List item 2
+
+        **bold**
+
+        *italic*
+
+        """
+
+        html = markdown_to_html(markdown)
+
+        print(html.to_html())
