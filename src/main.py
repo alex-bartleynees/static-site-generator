@@ -1,10 +1,8 @@
-from src.textnode import TextNode
-from src.texttype import TextType
+from generate import copy_static
 
 
 def main():
-    text_node = TextNode("test", TextType.TEXT, "test")
-    print(text_node)
+   copy_static() 
 
 
 if __name__ == "__main__":
