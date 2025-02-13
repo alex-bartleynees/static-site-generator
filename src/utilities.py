@@ -4,7 +4,6 @@ from src.htmlnode import HTMLNode
 from src.blocktype import BlockType
 from src.textnode import TextNode
 from src.texttype import TextType
-from src.htmlnode import HTMLNode
 import re
 
 
