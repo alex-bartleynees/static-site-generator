@@ -4,6 +4,7 @@ from src.htmlnode import HTMLNode
 from src.blocktype import BlockType
 from src.textnode import TextNode
 from src.texttype import TextType
+from src.htmlnode import HTMLNode
 import re
 
 
@@ -146,6 +147,38 @@ def markdown_to_html(markdown: str) -> HTMLNode:
                     text_nodes = text_to_text_nodes(text)
                     html_nodes = [node.text_node_to_html_node() for node in text_nodes]
                     parent_nodes.append(ParentNode("div", html_nodes))
+            case BlockType.QUOTE:
+                split_blocks = block.split("\n")
+                for quote in split_blocks:
+                    text_nodes = text_to_text_nodes(quote.strip(" > "))
+                    html_nodes = [node.text_node_to_html_node() for node in text_nodes]
+                    parent_nodes.append(ParentNode("blockquote", html_nodes))
+            case BlockType.UNORDERED_LIST:
+                split_blocks = block.split("\n")
+                list_item_nodes = []
+                for list_item in split_blocks:
+                    stripped = list_item.lstrip()
+                    if stripped.startswith('* '):
+                        content = stripped[2:]  
+                    elif stripped.startswith("- "):
+                        content = stripped[2:]
+                    else:
+                        content = list_item
+                    text_nodes = text_to_text_nodes(content)
+                    html_nodes = [node.text_node_to_html_node() for node in text_nodes]
+                    list_item_nodes.append(HTMLNode("li", children=html_nodes))
+                parent_list_node = HTMLNode("ul", children=list_item_nodes)
+                parent_nodes.append(parent_list_node)
+            case BlockType.ORDERED_LIST:
+                split_blocks = block.split("\n")
+                list_item_nodes = []
+                for list_item in split_blocks:
+                    stripped = list_item.lstrip()
+                    text_nodes = text_to_text_nodes(stripped[2:])
+                    html_nodes = [node.text_node_to_html_node() for node in text_nodes]
+                    list_item_nodes.append(HTMLNode("li", children=html_nodes))
+                parent_list_node = HTMLNode("ol", children=list_item_nodes)
+                parent_nodes.append(parent_list_node)
                 
 
     body_node = HTMLNode(tag="body", children=parent_nodes)
