@@ -96,9 +96,23 @@ def split_nodes_links(old_nodes: List[TextNode]) -> List[TextNode]:
 
 def text_to_text_nodes(text: str) -> List[TextNode]:
     base_node = TextNode(text=text, text_type=TextType.TEXT)
-    new_nodes = split_nodes_links(split_nodes_images(split_nodes_delimiter(split_nodes_delimiter(
-        split_nodes_delimiter([base_node], "**", TextType.BOLD), 
-        "*", TextType.ITALIC), "`", TextType.CODE)))
+    new_nodes = split_nodes_links(
+    split_nodes_images(
+        split_nodes_delimiter(
+            split_nodes_delimiter(
+                split_nodes_delimiter(
+                    split_nodes_delimiter(
+                        [base_node], 
+                        "**", TextType.BOLD
+                    ),
+                    "*", TextType.ITALIC
+                ),
+                "_", TextType.ITALIC  
+            ),
+            "`", TextType.CODE
+        )
+    )
+)
 
     return new_nodes
 
@@ -112,7 +126,7 @@ def markdown_to_blocks(text: str) -> List[str]:
 def block_to_block_type(block: str) -> BlockType:
     if re.match(r'^#{1,6}\s', block):
         return BlockType.HEADING
-    if re.match(r'^```(?!`).*```(?!`)$', block):
+    if re.match(r'^```(?!`)[\s\S]*```(?!`)$', block):
         return BlockType.CODE
     if re.match(r'^>(?!>)\s', block):
         return BlockType.QUOTE
@@ -138,6 +152,10 @@ def markdown_to_html(markdown: str) -> HTMLNode:
     for block in blocks:
         block_type = block_to_block_type(block)
         match block_type:
+            case BlockType.CODE:
+                text_nodes = text_to_text_nodes(block)
+                html_nodes = [node.text_node_to_html_node() for node in text_nodes]
+                parent_nodes.append(ParentNode("div", html_nodes))
             case BlockType.HEADING:
                 parent_nodes = [*parent_nodes, *heading_block_to_html_nodes(block)] 
             case BlockType.PARAGRAPH:
@@ -173,7 +191,7 @@ def markdown_to_html(markdown: str) -> HTMLNode:
                 list_item_nodes = []
                 for list_item in split_blocks:
                     stripped = list_item.lstrip()
-                    text_nodes = text_to_text_nodes(stripped[2:])
+                    text_nodes = text_to_text_nodes(stripped[2:].strip())
                     html_nodes = [node.text_node_to_html_node() for node in text_nodes]
                     list_item_nodes.append(HTMLNode("li", children=html_nodes))
                 parent_list_node = HTMLNode("ol", children=list_item_nodes)
@@ -192,3 +210,11 @@ def heading_block_to_html_nodes(block: str) -> List[HTMLNode]:
         html_nodes = [node.text_node_to_html_node() for node in text_nodes]
         nodes.append(ParentNode(f"h{heading_number}", html_nodes))
     return nodes
+
+def extract_title(markdown: str) -> str:
+    match = re.search(r'^\s*#(?!#)\s+(.+)', markdown.strip())
+    if match:
+        cleaned_title = re.sub(r'\*{1,2}', '', match.group(1))
+        return cleaned_title
+    else:
+        raise ValueError("Document must have a title")

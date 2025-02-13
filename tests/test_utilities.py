@@ -1,6 +1,6 @@
 import unittest
 from src.blocktype import BlockType
-from src.utilities import block_to_block_type, extract_markdown_images, extract_markdown_links, markdown_to_blocks, markdown_to_html, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
+from src.utilities import block_to_block_type, extract_markdown_images, extract_markdown_links, extract_title, markdown_to_blocks, markdown_to_html, split_nodes_delimiter, split_nodes_images, split_nodes_links, text_to_text_nodes
 from src.textnode import TextNode 
 from src.texttype import TextType
 
@@ -171,8 +171,13 @@ class MarkdownToHTML(unittest.TestCase):
         > This is a quote
         > This is another quote
 
-        ```() => {}```
-        ```() => Hello World```
+        ```
+        () => {}
+        ```
+
+        ```
+        () => Hello World
+        ```
 
         1. List item 1
         2. List item 2
@@ -191,4 +196,46 @@ class MarkdownToHTML(unittest.TestCase):
 
         html = markdown_to_html(markdown)
 
-        self.assertEqual(html.to_html(), '<body><h1><i>Heading</i> 1</h1><h2><b>Heading</b> 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6><div>Test paragraph</div><div>        Test paragraph 2</div><ul><li>Unordered list 1</li><li>Unordered list 2</li></ul><blockquote>This is a quote</blockquote><blockquote>This is another quote</blockquote><div><code>() => {}</code></div><div>        <code>() => Hello World</code></div><ol><li> List item 1</li><li> List item 2</li></ol><div><b>bold</b></div><div><i>italic</i></div><div>This is text with a link <a href="https://www.boot.dev">to boot dev</a> and <a href="https://www.youtube.com/@bootdotdev">to youtube</a></div><div>This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src="https://i.imgur.com/fJRm4Vk.jpeg" alt="obi wan image"></img> and a <a href="https://boot.dev">link</a></div><div></div></body>')
+        self.assertEqual(html.to_html(), '''<body><h1><i>Heading</i> 1</h1><h2><b>Heading</b> 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6><div>Test paragraph</div><div>        Test paragraph 2</div><ul><li>Unordered list 1</li><li>Unordered list 2</li></ul><blockquote>This is a quote</blockquote><blockquote>This is another quote</blockquote><div><code>
+        () => {}
+        </code></div><div><code>
+        () => Hello World
+        </code></div><ol><li> List item 1</li><li> List item 2</li></ol><div><b>bold</b></div><div><i>italic</i></div><div>This is text with a link <a href="https://www.boot.dev">to boot dev</a> and <a href="https://www.youtube.com/@bootdotdev">to youtube</a></div><div>This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src="https://i.imgur.com/fJRm4Vk.jpeg" alt="obi wan image"></img> and a <a href="https://boot.dev">link</a></div><div></div></body>'''
+)
+
+    def test_extract_title(self):
+        markdown = """
+        # *Heading* 1
+        ## **Heading** 2
+        ### Heading 3
+        #### Heading 4
+        ##### Heading 5
+        ###### Heading 6
+
+        Test paragraph
+        Test paragraph 2
+
+        - Unordered list 1
+        - Unordered list 2
+
+        > This is a quote
+        > This is another quote
+
+        ```() => {}```
+        ```() => Hello World```
+
+        1. List item 1
+        2. List item 2
+
+        **bold**
+
+        *italic*
+
+        This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)
+
+        This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)
+        """
+
+        result = extract_title(markdown)
+
+        self.assertEqual(result, "Heading 1")

@@ -1,5 +1,6 @@
 from pathlib import Path
 import shutil
+from src.utilities import extract_title, markdown_to_html
 
 def copy_static():
     current_path = Path(__file__).parent.resolve()
@@ -21,4 +22,17 @@ def copy_files(folder_path: Path, public_path: Path):
             new_folder_path.mkdir()
             copy_files(file, new_folder_path)
 
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path, "r") as file:
+        file = file.read()
+        html = markdown_to_html(file).to_html()
+        title = extract_title(file)
 
+    with open(template_path, "r") as f:
+        template = f.read()
+        template = template.replace("{{ Title }}", title)
+        template = template.replace("{{ Content }}", html)
+    
+    with open(dest_path, "x") as new_file:
+        new_file.write(template)
