@@ -36,3 +36,17 @@ def generate_page(from_path, template_path, dest_path):
     
     with open(dest_path, "x") as new_file:
         new_file.write(template)
+
+def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
+    content_folder = Path(dir_path_content)
+    files = content_folder.glob("*")
+    for file in files:
+        if file.is_file():
+            dest_path = f"{dest_dir_path}/index.html"
+            generate_page(file, template_path, dest_path)
+        elif file.is_dir():
+            new_folder_path = Path(f"{dest_dir_path}/{file.parts[-1]}")
+            print("new folder path", new_folder_path)
+            new_folder_path.mkdir()
+            generate_page_recursive(file, template_path, new_folder_path)
+

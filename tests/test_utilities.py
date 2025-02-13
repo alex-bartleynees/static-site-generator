@@ -195,7 +195,7 @@ class MarkdownToHTML(unittest.TestCase):
         """
 
         html = markdown_to_html(markdown)
-
+        print(html.to_html())
         self.assertEqual(html.to_html(), '''<body><h1><i>Heading</i> 1</h1><h2><b>Heading</b> 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6><div>Test paragraph</div><div>        Test paragraph 2</div><ul><li>Unordered list 1</li><li>Unordered list 2</li></ul><blockquote>This is a quote</blockquote><blockquote>This is another quote</blockquote><div><code>
         () => {}
         </code></div><div><code>
